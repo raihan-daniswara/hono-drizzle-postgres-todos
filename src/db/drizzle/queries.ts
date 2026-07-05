@@ -14,7 +14,11 @@ export type NewTodo = {
   completed?: boolean;
 };
 
-export const insertUser = async (db: DB, email: string, password: string) => {
+export const insertUser = async (
+  db: DB,
+  email: string,
+  password: string,
+): Promise<UUID> => {
   const passwordHash = await Bun.password.hash(password);
 
   const [user] = await db
@@ -22,7 +26,7 @@ export const insertUser = async (db: DB, email: string, password: string) => {
     .values({ email, passwordHash })
     .returning();
 
-  return user.id;
+  return user.id as UUID;
 };
 
 export const insertTodo = async (db: DB, todo: NewTodo) => {
@@ -30,7 +34,7 @@ export const insertTodo = async (db: DB, todo: NewTodo) => {
   return created;
 };
 
-export const getTodosByUserId = async (userId: UUID) => {
+export const getTodosByUserId = async (db: DB, userId: UUID) => {
   const todos = await db
     .select()
     .from(todosTable)
